@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poki Style Free Games Zone</title>
+    <style>
+        /* Poki.com थीम कलर्स */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2a154d;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* हेडर और सर्च बार */
+        header {
+            background-color: #3f236e;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        header h1 { margin: 0; font-size: 24px; color: #00ffcc; cursor: pointer; }
+        
+        .search-box {
+            background: #2a154d;
+            border: 2px solid #5a3799;
+            border-radius: 25px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            width: 300px;
+        }
+        .search-box input {
+            background: none;
+            border: none;
+            color: white;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        /* Poki स्टाइल गेम ग्रिड */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+        }
+        @media (min-width: 600px) {
+            .game-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        }
+
+        .game-card {
+            background-color: #3f236e;
+            border-radius: 18px;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 3px solid transparent;
+        }
+        .game-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border-color: #00ffcc;
+        }
+        .game-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .game-title-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px black;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff3366;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+            z-index: 10;
+        }
+
+        /* फुल स्क्रीन डायरेक्ट थियेटर मोड */
+        .game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            z-index: 2000;
+        }
+        .game-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .close-modal-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background-color: #ff3366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 3000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* गुप्त डेवलपर पैनल */
+        .admin-panel {
+            display: none;
+            background-color: #1a0c33;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 2px dashed #00ffcc;
+        }
+        .admin-panel input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #5a3799;
+            background: #2a154d;
+            color: white;
+            box-sizing: border-box;
+        }
+        .admin-panel button {
+            background: #00ffcc;
+            color: #2a154d;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 onclick="location.reload()">🌀 POKI ZONE</h1>
+        <div class="search-box">
+            <input type="text" id="searchGames" oninput="filterGames()" placeholder="गेम खोजें...">
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- गुप्त पैनल (कीबोर्ड पर 'A' दबाने से खुलेगा) -->
+        <div class="admin-panel" id="adminPanel">
+            <h3 style="margin:0; color:#00ffcc;">🔑 डेवलपर कंट्रोल</h3>
+            <input type="password" id="adminPass" placeholder="पासवर्ड (983969)">
+            <input type="text" id="gTitle" placeholder="गेम का नाम">
+            <input type="text" id="gImage" placeholder="इमेज का डायरेक्ट यूआरएल">
+            <input type="text" id="gLink" placeholder="गेम का डायरेक्ट गिटहब/ओपन सोर्स लिंक">
+            <button onclick="addPokiGame()">Add Game To Poki Grid</button>
+        </div>
+
+        <div class="game-grid" id="pokiGrid"></div>
+    </div>
+
+    <!-- डायरेक्ट प्ले स्क्रीन विंडो -->
+    <div class="game-modal" id="gameTheater">
+        <button class="close-modal-btn" onclick="closeTheater()">❌ बैक (Home)</button>
+        <iframe class="game-frame" id="theaterIframe" src="" allow="autoplay; fullscreen"></iframe>
+    </div>
+
+    <script>
+        let isDeveloper = false;
+
+        // डिफ़ॉल्ट रूप से कुछ बेहतरीन बिना विज्ञापन वाले गेम्स पहले से एडेड हैं
+        const defaultGames = [
+            { title: "Ludo King Classic", image: "https://unsplash.com", link: "https://github.io" },
+            { title: "Flappy Bird", image: "https://unsplash.com", link: "https://github.io" },
+            { title: "2048 Puzzle", image: "https://unsplash.com", link: "https://github.io" }
+        ];
+
+        document.addEventListener("DOMContentLoaded", loadPokiGrid);
+
+        // 'A' दबाने पर एडमिन पैनल छिपाना/दिखाना
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "a" || e.key === "A") {
+                const panel = document.getElementById("adminPanel");
+                panel.style.display = panel.style.display === "block" ? "none" : "block";
+            }
+        });
+
+        function addPokiGame() {
+            const pass = document.getElementById("adminPass").value;
+            const title = document.getElementById("gTitle").value;
+            const image = document.getElementById("gImage").value;
+            const link = document.getElementById("gLink").value;
+
+            if (pass !== "983969") { alert("गलत पासवर्ड!"); return; }
+            if (!title || !image || !link) { alert("सभी बॉक्स भरें!"); return; }
+
+            let customGames = localStorage.getItem("pokiGames") ? JSON.parse(localStorage.getItem("pokiGames")) : [];
+            customGames.push({ title, image, link });
+            localStorage.setItem("pokiGames", JSON.stringify(customGames));
+
+            isDeveloper = true; // पासवर्ड सही होने पर डिलीट बटन चालू रखें
+            loadPokiGrid();
+        }
+
+        function loadPokiGrid() {
+            const grid = document.getElementById("pokiGrid");
+            grid.innerHTML = "";
+
+            let customGames = localStorage.getItem("pokiGames") ? JSON.parse(localStorage.getItem("pokiGames")) : [];
+            let allGames = [...defaultGames, ...customGames];
+
+            allGames.forEach((game, index) => {
+                // डिफ़ॉल्ट गेम्स को डिलीट नहीं किया जा सकता, सिर्फ कस्टम गेम्स पर डिलीट दिखेगा
+                const showDel = (isDeveloper && index >= defaultGames.length) ? "display:block;" : "display:none;";
+                const customIndex = index - defaultGames.length;
+
+                grid.innerHTML += `
+                    <div class="game-card" onclick="openTheater('${game.link}')">
+                        <button class="delete-btn" style="${showDel}" onclick="event.stopPropagation(); deletePokiGame(${customIndex})">X</button>
+                        <img src="${game.image}" alt="${game.title}">
+                        <div class="game-title-overlay">${game.title}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function openTheater(link) {
+            document.getElementById("theaterIframe").src = link;
+            document.getElementById("gameTheater").style.display = "block";
+            document.body.style.overflow = "hidden"; // बैकग्राउंड स्क्रॉल बंद करें
+        }
+
+        function closeTheater() {
+            document.getElementById("theaterIframe").src = "";
+            document.getElementById("gameTheater").style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        function deletePokiGame(idx) {
+            let customGames = JSON.parse(localStorage.getItem("pokiGames"));
+            customGames.splice(idx, 1);
+            localStorage.setItem("pokiGames", JSON.stringify(customGames));
+            loadPokiGrid();
+        }
+
+        // गेम सर्च फ़िल्टर
+        function filterGames() {
+            const query = document.getElementById("searchGames").value.toLowerCase();
+            const cards = document.querySelectorAll(".game-card");
+            cards.forEach(card => {
+                const title = card.querySelector(".game-title-overlay").innerText.toLowerCase();
+                card.style.display = title.includes(query) ? "block" : "none";
+            });
+        }
+    </script>
+</body>
+</html>
